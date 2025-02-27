@@ -96,14 +96,15 @@ mod tests {
     #[test]
     fn deserialize_currency() {
         let json = r#"{
-     "currency": "GT",
-     "delisted": false,
-     "withdraw_disabled": false,
-     "withdraw_delayed": false,
-     "deposit_disabled": false,
-     "trade_disabled": false,
-     "chain": "GT"
-  }"#;
+            "currency": "GT",
+            "delisted": false,
+            "withdraw_disabled": false,
+            "withdraw_delayed": false,
+            "deposit_disabled": false,
+            "trade_disabled": false,
+            "chain": "GT"
+        }"#;
+
         let expected = Currency {
             currency: "GT".into(),
             delisted: false,
