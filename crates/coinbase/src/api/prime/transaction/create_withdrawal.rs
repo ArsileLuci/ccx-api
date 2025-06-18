@@ -45,6 +45,18 @@ struct BlockchainAddress<'a> {
     /// Account identifier
     #[serde(skip_serializing_if = "Option::is_none")]
     account_identifier: Option<&'a str>,
+
+    network: Network<'a>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq)]
+struct Network<'a> {
+    /// The network id: base, bitcoin, ethereum, solana etc
+    id: &'a str,
+
+    /// The network type: mainnet, testnet, etc
+    #[serde(rename = "type")]
+    network_type: &'a str, 
 }
 
 #[cfg(feature = "with_network")]
@@ -65,6 +77,7 @@ where
     /// * `amount` - The amount in whole units of the withdrawal.
     /// * `currency_symbol` - The currency symbol for the withdrawal.
     /// * `address` - The blockchain address.
+    /// * `network_id` - The network id: base, bitcoin, ethereum, solana etc
     ///
     /// [https://docs.cdp.coinbase.com/prime/reference/primerestapi_createwalletwithdrawal]
     pub fn create_withdrawal_blockchain(
@@ -75,6 +88,7 @@ where
         amount: Decimal,
         currency_symbol: &str,
         address: &str,
+        network_id: &str,
     ) -> CoinbaseResult<Task<WithdrawalResponse>> {
         let timestamp = Utc::now().timestamp() as u32;
         let endpoint = format!("/v1/portfolios/{portfolio_id}/wallets/{wallet_id}/withdrawals");
@@ -92,6 +106,11 @@ where
                             blockchain_address: BlockchainAddress {
                                 address,
                                 account_identifier: None,
+                                network: Network {
+                                    id: network_id,
+                                    // FIXME: Quick fix. Allow to select between main and test networks.
+                                    network_type: "mainnet",
+                                }
                             },
                         },
                     })?,
